@@ -16,6 +16,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     "Sends an introduction to a new user"
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I am a cocktail bot!")
 
+# trial get ingredients handler
+async def get(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    "Sends an introduction to a new user"
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Gimme ingredients!!!")
+
 def main():
     "Main bot logic"
     # connect my bot to this code by token (API)
@@ -23,6 +28,10 @@ def main():
 
     start_handler = CommandHandler('start', start)
     application.add_handler(start_handler)
+
+    # trial get handler
+    get_handler = CommandHandler('get', get)
+    application.add_handler(get_handler)
 
     # start working until ctrl+C
     application.run_polling()
