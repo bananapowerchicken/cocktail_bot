@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 from dotenv import load_dotenv
 import os
 
@@ -17,9 +17,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Hi! I am a cocktail bot!")
 
 # trial get ingredients handler
-async def get(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    "Sends an introduction to a new user"
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Gimme ingredients!!!")
+async def echo(update, context) -> None:
+    "Sends back the text"
+    user_message = update.message.text
+    await update.message.reply_text(user_message)
 
 def main():
     "Main bot logic"
@@ -29,9 +30,9 @@ def main():
     start_handler = CommandHandler('start', start)
     application.add_handler(start_handler)
 
-    # trial get handler
-    get_handler = CommandHandler('get', get)
-    application.add_handler(get_handler)
+    # Создаем обработчик сообщений, который будет вызывать функцию echo при получении любого текста
+    echo_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, echo)
+    application.add_handler(echo_handler)
 
     # start working until ctrl+C
     application.run_polling()
