@@ -14,7 +14,31 @@ BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 user_state = {}
 
 # list of ingredients, that user has and prints in bot
-ingredients = []
+ingredients = {}
+
+# TEST
+# tmp db
+# TO DO: move to real DB - not llocal dict
+db_cocktails = {
+    'Whiskey-Cola': {
+        'ingredients': ['whiskey', 'cola'],
+        'recipe': 'mix it!'
+    },
+    'Whiskey-Cola-Lemon': {
+        'ingredients': ['whiskey', 'cola', 'lemon'],
+        'recipe': 'mix it and add lemon!'
+    },
+    'Gin-Tonic': {
+        'ingredients': ['gin', 'tonic'],
+        'recipe': 'splish - splash and ready'
+    },
+    'Electric lemonade': {
+        'ingredients': ['vodka', 'lemon juice', 'sugar syrup', 'lemonade', 'blue curacao liqueur'],
+        'recipe': 'vodka 45 ml + lemon juice 30 ml + sugar syrup 15 ml + lemonade 60 ml + blue curacao liqueur 10 ml. Shake and enjoy! '
+    },
+
+    
+}
 
 # Enable logging
 logging.basicConfig(
@@ -48,8 +72,11 @@ async def collect_ingredients(update, context) -> None:
     chat_id = update.effective_chat.id
     
     if user_state.get(chat_id) == 'waiting_for_ingredients':
-        ingredients.append(update.message.text)
-        await update.message.reply_text(f"Added: {update.message.text}") # to check
+        ingredient = update.message.text.lower()
+        if chat_id not in ingredients:
+            ingredients[chat_id] = []
+        ingredients[chat_id].append(ingredient)
+        await update.message.reply_text(f"Added: {ingredient}")
 
 async def wanna_cocktail(update, context) -> None:
     """Resend you formatted ingredients with additional text"""
@@ -66,17 +93,25 @@ async def stop_waiting(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     
     # Reset user state
     user_state.pop(chat_id, None)
+
+    # Find matching cocktails
+    matching_cocktails = []
+    user_ingreds = set(ingredients.get(chat_id, []))
     
-    # Optionally send a message confirming the state has been reset
-    await context.bot.send_message(chat_id=chat_id, text="Stopped waiting for ingredients.")
-
-    ingredients_list = ''
-    if ingredients != '':
-        for i in ingredients:
-            ingredients_list+=f'{i} \n'
-
-
-    await context.bot.send_message(chat_id=chat_id, text=f"So you wanna cocktail from:\n {ingredients_list}")
+    for cocktail, details in db_cocktails.items():
+        if user_ingreds.issuperset(details["ingredients"]):
+            matching_cocktails.append(cocktail)
+    
+    if matching_cocktails:
+        cocktail_list = ''
+        for cocktail in matching_cocktails:
+            cocktail_list += f"{cocktail}\n{db_cocktails[cocktail]['recipe']}\n\n"
+        await context.bot.send_message(chat_id=chat_id, text=f"Based on your ingredients, you can make:\n{cocktail_list}")
+    else:
+        await context.bot.send_message(chat_id=chat_id, text="No cocktails found with those ingredients.")
+    
+    # Clear ingredients list for this user
+    ingredients.pop(chat_id, None)
 
 def main():
     "Main bot logic"
