@@ -28,13 +28,6 @@ logger = logging.getLogger(__name__)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send an introduction to a new user"""
 
-    # # Create a button connected to msg   
-    # keyboard = [
-    #     [InlineKeyboardButton("Wanna cocktail", callback_data='wanna_cocktail')]
-    # ]
-    # reply_markup = InlineKeyboardMarkup(keyboard)
-    # await update.message.reply_text('Welcome to the Cocktail Bot! Click the button below to get started.', reply_markup=reply_markup)
-
     # add menu
     # buttons
     keyboard = [
@@ -49,18 +42,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         'Welcome to the Cocktail Bot! Choose an option and press the button', 
         reply_markup=reply_markup
     )
-
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle button clicks."""
-    query = update.callback_query
-    await query.answer()
-
-    # Detection of pressed btn
-    if query.data == 'wanna_cocktail':
-        # execute logic from handler /wanna (how not to duplicate?)
-        chat_id = update.effective_chat.id
-        await context.bot.send_message(chat_id=query.message.chat_id, text="Wanna cocktail? Gimme ingredients")
-        user_state[chat_id] = 'waiting_for_ingredients'
 
 async def collect_ingredients(update, context) -> None:
     """Collect ingredients form the user message if 'waiting_for_ingredients' state is active."""
@@ -104,21 +85,6 @@ def main():
 
     start_handler = CommandHandler('start', start)
     application.add_handler(start_handler)
-
-    # # # Создаем обработчик сообщений, который будет вызывать функцию echo при получении любого текста
-    # # echo_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, echo)
-    # # application.add_handler(echo_handler)
-
-    # # Callback handler for buttons
-    # button_handler = CallbackQueryHandler(button)
-    # application.add_handler(button_handler)
-
-    # # trial wanna_cocktail handler
-    # wanna_handler = CommandHandler('wanna', wanna_cocktail)
-    # application.add_handler(wanna_handler)
-
-    # stop_handler = CommandHandler('stop', stop_waiting)
-    # application.add_handler(stop_handler)
 
     # menu button handler
     # Regex must fully match!!!
