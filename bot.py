@@ -17,7 +17,7 @@ user_state = {}
 ingredients = {}
 
 # TEST
-# tmp db
+# tmp db with names and recepies
 # TO DO: move to real DB - not llocal dict
 db_cocktails = {
     'Whiskey-Cola': {
@@ -39,7 +39,7 @@ db_cocktails = {
 }
 
 # wanna try suggesting ingredients from db
-db_ingredients = ['whiskey', 'cola', 'vodka', 'lemon juice']
+db_ingredients = ['whiskey', 'cola', 'vodka', 'lemon juice', 'lemon']
 
 # Enable logging
 logging.basicConfig(
@@ -72,13 +72,15 @@ async def search_ingredient(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     """Search for ingredients matching the user's input and show as inline buttons."""
     query = update.message.text.lower()
     matching_ingredients = [ing for ing in db_ingredients if query in ing]
-
-    if matching_ingredients:
-        keyboard = [[InlineKeyboardButton(ing, callback_data=ing)] for ing in matching_ingredients]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text('Select an ingredient:', reply_markup=reply_markup)
-    else:
-        await update.message.reply_text('No matching ingredients found.')
+    
+    chat_id = update.effective_chat.id
+    if user_state.get(chat_id) == 'waiting_for_ingredients':
+        if matching_ingredients:
+            keyboard = [[InlineKeyboardButton(ing, callback_data=ing)] for ing in matching_ingredients]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await update.message.reply_text('Select an ingredient:', reply_markup=reply_markup)
+        else:
+            await update.message.reply_text('No matching ingredients found.')
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle button clicks and add selected ingredient to user's list."""
@@ -88,10 +90,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     selected_ingredient = query.data
     chat_id = update.effective_chat.id
 
+    # Ensure that chat_id exists in the ingredients dictionary
+    if chat_id not in ingredients:
+        ingredients[chat_id] = []
+
     # You can store this ingredient in a list specific to the user
     user_ingredients = context.user_data.get("ingredients", [])
     user_ingredients.append(selected_ingredient)
+    ingredients[chat_id].append(selected_ingredient) # !
     context.user_data["ingredients"] = user_ingredients
+
 
     await query.edit_message_text(f"Added: {selected_ingredient}")
 
@@ -151,16 +159,16 @@ def main():
 
     # menu button handler
     # Regex must fully match!!!
-    # wanna_handler = MessageHandler(filters.TEXT & filters.Regex('^Wanna cocktail🍹$'), wanna_cocktail)
-    # application.add_handler(wanna_handler)
+    wanna_handler = MessageHandler(filters.TEXT & filters.Regex('^Wanna cocktail🍹$'), wanna_cocktail)
+    application.add_handler(wanna_handler)
 
     # collect_handler = MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex('^Stop$'), collect_ingredients)
     # application.add_handler(collect_handler)
 
-    # stop_handler = MessageHandler(filters.TEXT & filters.Regex('^Stop$'), stop_waiting)
-    # application.add_handler(stop_handler)
+    stop_handler = MessageHandler(filters.TEXT & filters.Regex('^Stop$'), stop_waiting)
+    application.add_handler(stop_handler)
 
-    search_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, search_ingredient)
+    search_handler = MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex('^Stop$'), search_ingredient)
     application.add_handler(search_handler)
 
     press_button_handler = CallbackQueryHandler(button_handler)
