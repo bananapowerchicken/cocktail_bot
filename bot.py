@@ -35,10 +35,11 @@ db_cocktails = {
     'Electric lemonade': {
         'ingredients': ['vodka', 'lemon juice', 'sugar syrup', 'lemonade', 'blue curacao liqueur'],
         'recipe': 'vodka 45 ml + lemon juice 30 ml + sugar syrup 15 ml + lemonade 60 ml + blue curacao liqueur 10 ml. Shake and enjoy! '
-    },
-
-    
+    },    
 }
+
+# wanna try suggesting ingredients from db
+db_ingredients = ['whiskey', 'cola', 'vodka', 'lemon juice']
 
 # Enable logging
 logging.basicConfig(
@@ -66,6 +67,33 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         'Welcome to the Cocktail Bot! Choose an option and press the button', 
         reply_markup=reply_markup
     )
+
+async def search_ingredient(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Search for ingredients matching the user's input and show as inline buttons."""
+    query = update.message.text.lower()
+    matching_ingredients = [ing for ing in db_ingredients if query in ing]
+
+    if matching_ingredients:
+        keyboard = [[InlineKeyboardButton(ing, callback_data=ing)] for ing in matching_ingredients]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text('Select an ingredient:', reply_markup=reply_markup)
+    else:
+        await update.message.reply_text('No matching ingredients found.')
+
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle button clicks and add selected ingredient to user's list."""
+    query = update.callback_query
+    await query.answer()
+
+    selected_ingredient = query.data
+    chat_id = update.effective_chat.id
+
+    # You can store this ingredient in a list specific to the user
+    user_ingredients = context.user_data.get("ingredients", [])
+    user_ingredients.append(selected_ingredient)
+    context.user_data["ingredients"] = user_ingredients
+
+    await query.edit_message_text(f"Added: {selected_ingredient}")
 
 async def collect_ingredients(update, context) -> None:
     """Collect ingredients form the user message if 'waiting_for_ingredients' state is active."""
@@ -123,14 +151,20 @@ def main():
 
     # menu button handler
     # Regex must fully match!!!
-    wanna_handler = MessageHandler(filters.TEXT & filters.Regex('^Wanna cocktail🍹$'), wanna_cocktail)
-    application.add_handler(wanna_handler)
+    # wanna_handler = MessageHandler(filters.TEXT & filters.Regex('^Wanna cocktail🍹$'), wanna_cocktail)
+    # application.add_handler(wanna_handler)
 
-    collect_handler = MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex('^Stop$'), collect_ingredients)
-    application.add_handler(collect_handler)
+    # collect_handler = MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex('^Stop$'), collect_ingredients)
+    # application.add_handler(collect_handler)
 
-    stop_handler = MessageHandler(filters.TEXT & filters.Regex('^Stop$'), stop_waiting)
-    application.add_handler(stop_handler)
+    # stop_handler = MessageHandler(filters.TEXT & filters.Regex('^Stop$'), stop_waiting)
+    # application.add_handler(stop_handler)
+
+    search_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, search_ingredient)
+    application.add_handler(search_handler)
+
+    press_button_handler = CallbackQueryHandler(button_handler)
+    application.add_handler(press_button_handler)
 
     # start working until ctrl+C
     application.run_polling()
