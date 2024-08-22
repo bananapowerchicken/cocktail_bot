@@ -103,17 +103,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     await query.edit_message_text(f"Added: {selected_ingredient}")
 
-async def collect_ingredients(update, context) -> None:
-    """Collect ingredients form the user message if 'waiting_for_ingredients' state is active."""
-    chat_id = update.effective_chat.id
-    
-    if user_state.get(chat_id) == 'waiting_for_ingredients':
-        ingredient = update.message.text.lower()
-        if chat_id not in ingredients:
-            ingredients[chat_id] = []
-        ingredients[chat_id].append(ingredient)
-        await update.message.reply_text(f"Added: {ingredient}")
-
 async def wanna_cocktail(update, context) -> None:
     """Resend you formatted ingredients with additional text"""
     chat_id = update.effective_chat.id
@@ -161,9 +150,6 @@ def main():
     # Regex must fully match!!!
     wanna_handler = MessageHandler(filters.TEXT & filters.Regex('^Wanna cocktail🍹$'), wanna_cocktail)
     application.add_handler(wanna_handler)
-
-    # collect_handler = MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex('^Stop$'), collect_ingredients)
-    # application.add_handler(collect_handler)
 
     stop_handler = MessageHandler(filters.TEXT & filters.Regex('^Stop$'), stop_waiting)
     application.add_handler(stop_handler)
