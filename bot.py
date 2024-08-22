@@ -5,7 +5,7 @@ import os
 import logging
 
 
-# load vars from .env file
+# load vars from .env file 
 load_dotenv()
 
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
