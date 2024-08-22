@@ -73,7 +73,7 @@ async def search_ingredient(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     query = update.message.text.lower()
     matching_ingredients = [ing for ing in db_ingredients if query in ing]
     
-    chat_id = update.effective_chat.id
+    chat_id = update.effective_chat.id 
     if user_state.get(chat_id) == 'waiting_for_ingredients':
         if matching_ingredients:
             keyboard = [[InlineKeyboardButton(ing, callback_data=ing)] for ing in matching_ingredients]
