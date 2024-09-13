@@ -18,7 +18,7 @@ ingredients = {}
 
 # TEST
 # tmp db with names and recepies
-# TO DO: move to real DB - not llocal dict
+# TO DO: move to real DB - not local dict
 db_cocktails = {
     'Whiskey-Cola': {
         'ingredients': ['whiskey', 'cola'],
@@ -45,6 +45,7 @@ db_ingredients = ['whiskey', 'cola', 'vodka', 'lemon juice', 'lemon']
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
+
 # set higher logging level for httpx to avoid all GET and POST requests being logged
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
