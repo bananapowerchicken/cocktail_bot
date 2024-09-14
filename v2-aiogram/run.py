@@ -8,6 +8,8 @@ import os
 from aiogram import Bot, Dispatcher
 from dotenv import load_dotenv
 
+from app.handlers import router
+
 
 # load vars from .env file 
 load_dotenv()
@@ -16,8 +18,9 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 async def main():    
     bot = Bot(token=BOT_TOKEN) # create bot    
-    dp = Dispatcher(bot) # create dispatcher
-    await dp.start_polling() # run bot
+    dp = Dispatcher() # create dispatcher
+    dp.include_router(router) # connect to handlers with this router   
+    await dp.start_polling(bot) # run bot
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
