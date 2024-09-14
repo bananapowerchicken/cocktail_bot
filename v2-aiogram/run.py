@@ -3,12 +3,19 @@
 import asyncio
 import logging
 import sys
+import os
 
 from aiogram import Bot, Dispatcher
+from dotenv import load_dotenv
+
+
+# load vars from .env file 
+load_dotenv()
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 
 async def main():    
-    bot = Bot(token='') # create bot    
+    bot = Bot(token=BOT_TOKEN) # create bot    
     dp = Dispatcher(bot) # create dispatcher
     await dp.start_polling() # run bot
 
