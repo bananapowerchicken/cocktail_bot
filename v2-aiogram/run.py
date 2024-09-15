@@ -9,6 +9,7 @@ from aiogram import Bot, Dispatcher
 from dotenv import load_dotenv
 
 from app.handlers import router
+from app.database.models import async_main
 
 
 # load vars from .env file 
@@ -16,7 +17,9 @@ load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 
-async def main():    
+async def main():
+    await async_main()
+
     bot = Bot(token=BOT_TOKEN) # create bot    
     dp = Dispatcher() # create dispatcher
     dp.include_router(router) # connect to handlers with this router   

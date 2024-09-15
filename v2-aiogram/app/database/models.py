@@ -45,8 +45,8 @@ class Ingredient(Base):
 class RecipeIngredient(Base):
     __tablename__ = 'recipe_ingredients'
 
-    recipe_id:  Mapped[int] = mapped_column(ForeignKey('recipes.id'))
-    ingredient_id: Mapped[int] = mapped_column(ForeignKey('ingredients.id'))
+    recipe_id: Mapped[int] = mapped_column(ForeignKey('recipes.id'), primary_key=True)
+    ingredient_id: Mapped[int] = mapped_column(ForeignKey('ingredients.id'), primary_key=True)
     quantity: Mapped[int] = mapped_column()
     unit: Mapped[str] = mapped_column(String(10))
 
