@@ -54,3 +54,9 @@ class RecipeIngredient(Base):
     recipe = relationship('Recipe', back_populates='ingredients')
     ingredient: Mapped["Ingredient"] = relationship('Ingredient', back_populates='recipes')
 
+
+# func that creates all the tables
+# starts once when the bot starts
+async def async_main():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
