@@ -25,6 +25,7 @@ async def main():
     dp.include_router(router) # connect to handlers with this router   
     await dp.start_polling(bot) # run bot
 
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     # wrap in try except to see nice error instead of KeyboardInterrupt
