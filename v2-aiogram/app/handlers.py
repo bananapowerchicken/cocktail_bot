@@ -5,6 +5,7 @@ from aiogram.types import Message
 from aiogram.filters import CommandStart
 
 import app.keyboards as kb
+from app.database.requests import get_ingredients
 
 router = Router() # a connecting obj with run file
 
@@ -31,4 +32,6 @@ async def command_give_instruction_handler(message: Message):
     """
     This handler shows ingredients from db table
     """
-    await message.answer('Here are ingredients from db')
+    ingredients = await get_ingredients()
+    print(ingredients)
+    await message.answer(f'Here are all ingredients we have: \n {ingredients}')
