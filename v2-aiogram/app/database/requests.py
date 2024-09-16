@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 # get all ingredients from DB
 # TO DO - not all of course - too many
-async def get_ingredients():
+async def get_ingredients() -> list:
     async with async_session() as session:
         # Выполняем запрос, чтобы получить все  ингредиенты
         result = await session.execute(select(Ingredient))
@@ -16,5 +16,5 @@ async def get_ingredients():
         # Преобразуем в список названий ингредиентов
         ingredient_names = [ingredient.name for ingredient in ingredients]
         
-        # Объединяем названия ингредиентов в строку, разделяя их запятыми
-        return ', '.join(ingredient_names)
+        # Возвращаем список ингредиентов
+        return ingredient_names

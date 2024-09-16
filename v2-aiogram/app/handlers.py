@@ -49,7 +49,7 @@ async def handle_user_input(message: Message):
     
     # Фильтрация ингредиентов, которые начинаются с введенного текста
     filtered_ingredients = [ingredient for ingredient in all_ingredients if ingredient.lower().startswith(user_input)]
-    filtered_ingredients = ['vodka', 'water']
+    # filtered_ingredients = ['vodka', 'water']
     if filtered_ingredients:
         # Создание инлайн-клавиатуры с предложениями
         suggestions_kb = kb.create_ingredient_suggestions(filtered_ingredients)
