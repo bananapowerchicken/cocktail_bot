@@ -6,5 +6,6 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 # main keyboard
 main_kb = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text='Gimme cocktails!')],
+    [KeyboardButton(text='Test show ingrs')],
     [KeyboardButton(text='Help - mock')]
 ])
