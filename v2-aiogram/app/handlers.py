@@ -1,7 +1,7 @@
 # separately stored handlers
 
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart
 
 import app.keyboards as kb
@@ -10,6 +10,7 @@ from app.database.requests import get_ingredients
 router = Router() # a connecting obj with run file
 
 search_ingrs = False # identifies if we are searching ingrs or not
+ingrs_list = [] # list of ingredients will be filled with users ingrs
 
 @router.message(CommandStart())
 async def command_start_handler(message: Message):
@@ -26,6 +27,9 @@ async def command_give_instruction_handler(message: Message):
     This handler sends an instruction after pressing Gimme cocktail btn
     """
     await message.answer('Please, type your ingredients')
+    # renew list
+    global ingrs_list
+    ingrs_list = []
 
 
 @router.message(lambda message: message.text == 'Add ingredients')
@@ -46,6 +50,27 @@ async def command_give_instruction_handler(message: Message):
     await message.answer('Ingredients accepted')
     global search_ingrs
     search_ingrs = False
+    global ingrs_list
+    await message.answer(f'Ingredients list: {ingrs_list}')
+
+
+@router.callback_query()
+async def handle_callback_query(callback_query: CallbackQuery):
+    """
+    Обрабатывает callback-запросы от инлайн-клавиатуры.
+    """
+    data = callback_query.data
+    if data.startswith("ingredient_"):
+        ingredient = data[len("ingredient_"):].replace("_", " ").capitalize()
+        
+        global ingrs_list
+        # Добавляем ингредиент в список
+        if ingredient not in ingrs_list:
+            ingrs_list.append(ingredient)
+        
+        await callback_query.message.answer(f"Ингредиент '{ingredient}' добавлен в список.")
+        await callback_query.answer()  # Отвечаем на callback-запрос, чтобы убрать анимацию
+
 
 @router.message()
 async def handle_user_input(message: Message):
@@ -64,7 +89,7 @@ async def handle_user_input(message: Message):
         
         # Фильтрация ингредиентов, которые начинаются с введенного текста
         filtered_ingredients = [ingredient for ingredient in all_ingredients if ingredient.lower().startswith(user_input)]
-        # filtered_ingredients = ['vodka', 'water']
+
         if filtered_ingredients:
             # Создание инлайн-клавиатуры с предложениями
             suggestions_kb = kb.create_ingredient_suggestions(filtered_ingredients)
