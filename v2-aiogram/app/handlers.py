@@ -37,6 +37,16 @@ async def command_give_instruction_handler(message: Message):
     global search_ingrs
     search_ingrs = True
 
+
+@router.message(lambda message: message.text == 'Stop adding ingredients')
+async def command_give_instruction_handler(message: Message):
+    """
+    This handler identifies that adding ingredients is finished
+    """
+    await message.answer('Ingredients accepted')
+    global search_ingrs
+    search_ingrs = False
+
 @router.message()
 async def handle_user_input(message: Message):
     """
