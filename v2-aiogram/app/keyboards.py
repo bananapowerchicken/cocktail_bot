@@ -8,6 +8,7 @@ main_kb = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text='Gimme cocktails!')],
     [KeyboardButton(text='Add ingredients')],
     [KeyboardButton(text='Stop adding ingredients')],
+    [KeyboardButton(text='RECIPE')],
     [KeyboardButton(text='Help - mock')]
 ])
 

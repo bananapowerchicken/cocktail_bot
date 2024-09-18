@@ -5,7 +5,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart
 
 import app.keyboards as kb
-from app.database.requests import get_ingredients
+from app.database.requests import get_ingredients, find_recipes_by_ingredients
 
 router = Router() # a connecting obj with run file
 
@@ -54,6 +54,20 @@ async def command_give_instruction_handler(message: Message):
     await message.answer(f'Ingredients list: {ingrs_list}')
 
 
+@router.message(lambda message: message.text == 'RECIPE')
+async def command_give_instruction_handler(message: Message):
+    """
+    This handler gives recipes with user ingrs
+    """
+    global ingrs_list
+    print('AAAA')
+    res = await find_recipes_by_ingredients(ingrs_list)
+    print(f'recipe {res}')
+
+    await message.answer(f'Here are your ingrs: {ingrs_list}')
+    await message.answer(f'Here are your recipe: {res}')
+    
+
 @router.callback_query()
 async def handle_callback_query(callback_query: CallbackQuery):
     """
@@ -97,3 +111,6 @@ async def handle_user_input(message: Message):
         else:
             await message.answer("No matching ingredients found.")
 
+
+
+    
