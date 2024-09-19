@@ -56,15 +56,29 @@ async def find_recipes_by_ingredients(ingredient_names: list[str]) -> list[dict]
         result = await session.execute(query)
         rows = result.all()
 
+        # recipes = {}
+        # for rec_id, rec_name, rec_instr, ingr, quant, unit in rows:
+        #     recipes[rec_id] = {
+        #             'name': rec_name,
+        #             'instruction': rec_instr,
+        #             'ingr': ingr,
+        #             'quantity': quant,
+        #             'measure': unit
+        #     }
+
         recipes = {}
-        for rec_id, rec_name, rec_instr, ingr, quant, unit in rows:
-            recipes[rec_id] = {
-                    'name': rec_name,
-                    'instruction': rec_instr,
-                    'ingr': ingr,
-                    'quantity': quant,
-                    'measure': unit
-            }
+        for recipe_id, recipe_name, instruction, ingredient_name, quantity, unit in rows:
+            if recipe_name not in recipes:
+                recipes[recipe_name] = {
+                    'instruction': instruction,
+                    'ingredients': []
+                }
+            # Добавляем ингредиенты к рецепту
+            recipes[recipe_name]['ingredients'].append({
+                'name': ingredient_name,
+                'quantity': quantity,
+                'unit': unit
+            })
         
         return recipes
 
