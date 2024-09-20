@@ -60,6 +60,8 @@ async def command_give_instruction_handler(message: Message):
     This handler gives recipes with user ingrs
     """
     global ingrs_list
+
+
     print('AAAA')
     res = await find_recipes_by_ingredients(ingrs_list)
     print(f'recipe {res}')
