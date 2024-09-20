@@ -49,6 +49,7 @@ async def find_recipes_by_ingredients(ingredient_names: list[str]) -> list[dict]
             select(Recipe.id, Recipe.name, Recipe.instruction, Ingredient.name, RecipeIngredient.quantity, RecipeIngredient.unit)
             .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
             .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)  # Указываем соединение с Ingredient
+            .filter(ingredient_alias.name.in_(ingredient_names))
             .select_from(Recipe) # Явно указываем, что начинаем с Recipe
         )
 
