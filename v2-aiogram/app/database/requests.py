@@ -48,12 +48,37 @@ async def find_recipes_by_ingredients(ingredient_names: list[str]) -> list[dict]
         #     .filter(Recipe.id.in_(subquery))  # Фильтруем рецепты по подзапросу
         # )
 
+        # query = (
+        #     select(Recipe.id, Recipe.name, Recipe.instruction, Ingredient.name, RecipeIngredient.quantity, RecipeIngredient.unit)
+        #     .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
+        #     .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)  # Указываем соединение с Ingredient
+        #     .filter(Ingredient.name.in_(lowercase_ingrs))  # Фильтрация по списку ингредиентов
+        #     .select_from(Recipe) # Явно указываем, что начинаем с Recipe
+        # )
+
+        # Первый запрос: находим рецепты, в которых есть хотя бы один из указанных ингредиентов
+        recipe_ids_query = (
+            select(Recipe.id)
+            .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
+            .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)
+            .filter(Ingredient.name.in_(lowercase_ingrs))
+            .distinct()  # Избегаем дубликатов рецептов
+        )
+
+        # Выполняем первый запрос
+        recipe_ids_result = await session.execute(recipe_ids_query)
+        recipe_ids = [row[0] for row in recipe_ids_result]
+
+        # Если нет рецептов с указанными ингредиентами, возвращаем пустой список
+        if not recipe_ids:
+            return {}
+
+        # Второй запрос: находим все ингредиенты для найденных рецептов
         query = (
             select(Recipe.id, Recipe.name, Recipe.instruction, Ingredient.name, RecipeIngredient.quantity, RecipeIngredient.unit)
             .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
-            .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)  # Указываем соединение с Ingredient
-            .filter(Ingredient.name.in_(lowercase_ingrs))  # Фильтрация по списку ингредиентов
-            .select_from(Recipe) # Явно указываем, что начинаем с Recipe
+            .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)
+            .filter(Recipe.id.in_(recipe_ids))  # Выбираем рецепты, которые были найдены на предыдущем этапе
         )
 
         # Выполняем запрос
