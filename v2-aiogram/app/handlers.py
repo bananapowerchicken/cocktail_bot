@@ -68,7 +68,19 @@ async def command_give_instruction_handler(message: Message):
 
     await message.answer(f'Here are your ingrs: {ingrs_list}')
     await message.answer(f'Here are your recipe: {res}')
-    
+
+
+@router.message(lambda message: message.text == 'Clean ingredients')
+async def command_give_instruction_handler(message: Message):
+    """
+    This handler makes ingredients' list empty
+    """
+    await message.answer('Ingredients list id empty')
+    global search_ingrs
+    search_ingrs = False
+    global ingrs_list
+    ingrs_list = []
+    await message.answer(f'Ingredients list: {ingrs_list}')
 
 @router.callback_query()
 async def handle_callback_query(callback_query: CallbackQuery):
