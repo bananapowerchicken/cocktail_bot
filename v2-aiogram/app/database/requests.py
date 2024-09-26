@@ -29,32 +29,6 @@ async def find_recipes_by_ingredients(ingredient_names: list[str]) -> list[dict]
         lowercase_ingrs = [ingr.lower() for ingr in ingredient_names]
         
         print(f'AAAA {lowercase_ingrs}')
-        # # Подзапрос для фильтрации рецептов, содержащих все указанные ингредиенты
-        # subquery = (
-        #     select(Recipe.id)
-        #     .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id) # Явно указываем, как соединять Recipe с RecipeIngredient
-        #     .join(ingredient_alias, ingredient_alias.id == RecipeIngredient.ingredient_id)
-        #     .filter(ingredient_alias.name.in_(ingredient_names))
-        #     .group_by(Recipe.id)
-        #     .having(func.count(RecipeIngredient.ingredient_id) == len(ingredient_names))
-        # ).subquery()
-
-        # # Основной запрос для получения названия рецепта, инструкции и ингредиентов
-        # query = (
-        #     select(Recipe.name, Recipe.instruction, Ingredient.name, RecipeIngredient.quantity, RecipeIngredient.unit)
-        #     .select_from(Recipe)  # Явно указываем, что начинаем с Recipe
-        #     .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)  # Указываем, как соединять с RecipeIngredient
-        #     .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)  # Указываем соединение с Ingredient
-        #     .filter(Recipe.id.in_(subquery))  # Фильтруем рецепты по подзапросу
-        # )
-
-        # query = (
-        #     select(Recipe.id, Recipe.name, Recipe.instruction, Ingredient.name, RecipeIngredient.quantity, RecipeIngredient.unit)
-        #     .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
-        #     .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)  # Указываем соединение с Ingredient
-        #     .filter(Ingredient.name.in_(lowercase_ingrs))  # Фильтрация по списку ингредиентов
-        #     .select_from(Recipe) # Явно указываем, что начинаем с Recipe
-        # )
 
         # Первый запрос: находим рецепты, в которых есть хотя бы один из указанных ингредиентов
         recipe_ids_query = (
