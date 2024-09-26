@@ -75,6 +75,56 @@ async def find_recipes_by_ingredients(ingredient_names: list[str]) -> list[dict]
         
         return recipes
 
+# Асинхронная функция для поиска рецептов по списку ингредиентов только из этих ингр
+async def find_recipes_by_only_ingredients(ingredient_names: list[str]) -> list[dict]:
+    lowercase_ingrs = [ingr.lower() for ingr in ingredient_names]
+    async with async_session() as session:  # Используем контекст с асинхронной сессией
+        # Первый запрос: находим рецепты, у которых все ингредиенты содержатся в списке указанных
+        recipe_ids_query = (
+            select(Recipe.id)
+            .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
+            .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)
+            .group_by(Recipe.id)
+            # Фильтруем рецепты, где ингредиенты не выходят за указанный список
+            .having(func.count(Ingredient.id) == func.count(func.case(
+                [(Ingredient.name.in_(lowercase_ingrs), 1)]
+            )))  # Проверяем, что все ингредиенты рецепта входят в указанный список
+            .distinct()  # Избегаем дубликатов рецептов
+        )
 
-        # Возвращаем список рецептов с ингредиентами
+        # Выполняем первый запрос
+        recipe_ids_result = await session.execute(recipe_ids_query)
+        recipe_ids = [row[0] for row in recipe_ids_result]
+
+        # Если нет рецептов с указанными ингредиентами, возвращаем пустой список
+        if not recipe_ids:
+            return {}
+
+        # Второй запрос: находим все ингредиенты для найденных рецептов
+        query = (
+            select(Recipe.id, Recipe.name, Recipe.instruction, Ingredient.name, RecipeIngredient.quantity, RecipeIngredient.unit)
+            .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
+            .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)
+            .filter(Recipe.id.in_(recipe_ids))  # Выбираем рецепты, которые были найдены на предыдущем этапе
+        )
+
+        # Выполняем запрос
+        result = await session.execute(query)
+        rows = result.all()
+
+        # TODO fix join
+        recipes = {}
+        for recipe_id, recipe_name, instruction, ingredient_name, quantity, unit in rows:
+            if recipe_name not in recipes:
+                recipes[recipe_name] = {
+                    'instruction': instruction,
+                    'ingredients': []
+                }
+            # Добавляем ингредиенты к рецепту
+            recipes[recipe_name]['ingredients'].append({
+                'name': ingredient_name,
+                'quantity': quantity,
+                'unit': unit
+            })
+
         return recipes

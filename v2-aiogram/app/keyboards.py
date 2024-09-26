@@ -9,7 +9,8 @@ main_kb = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text='Add ingredients')],
     [KeyboardButton(text='Stop adding ingredients')],
     [KeyboardButton(text='Clean ingredients')],
-    [KeyboardButton(text='RECIPE')],
+    [KeyboardButton(text='Recipes some ingrs')],
+    [KeyboardButton(text='Recipes only ingrs')],
     [KeyboardButton(text='Help - mock')]
 ])
 

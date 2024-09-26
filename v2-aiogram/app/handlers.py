@@ -5,7 +5,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart
 
 import app.keyboards as kb
-from app.database.requests import get_ingredients, find_recipes_by_ingredients
+from app.database.requests import get_ingredients, find_recipes_by_ingredients, find_recipes_by_only_ingredients
 
 router = Router() # a connecting obj with run file
 
@@ -54,7 +54,7 @@ async def command_give_instruction_handler(message: Message):
     await message.answer(f'Ingredients list: {ingrs_list}')
 
 
-@router.message(lambda message: message.text == 'RECIPE')
+@router.message(lambda message: message.text == 'Recipes some ingrs')
 async def command_give_instruction_handler(message: Message):
     """
     This handler gives recipes with user ingrs
@@ -64,6 +64,22 @@ async def command_give_instruction_handler(message: Message):
 
     print('AAAA')
     res = await find_recipes_by_ingredients(ingrs_list)
+    print(f'recipe {res}')
+
+    await message.answer(f'Here are your ingrs: {ingrs_list}')
+    await message.answer(f'Here are your recipe: {res}')
+
+
+@router.message(lambda message: message.text == 'Recipes only ingrs')
+async def command_give_instruction_handler(message: Message):
+    """
+    This handler gives recipes only from user's ingrs
+    """
+    global ingrs_list
+
+
+    print('AAAA')
+    res = await find_recipes_by_only_ingredients(ingrs_list)
     print(f'recipe {res}')
 
     await message.answer(f'Here are your ingrs: {ingrs_list}')
