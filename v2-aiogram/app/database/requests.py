@@ -24,11 +24,8 @@ async def get_ingredients() -> list:
 # Асинхронная функция для поиска рецептов по списку ингредиентов
 async def find_recipes_by_ingredients(ingredient_names: list[str]) -> list[dict]:
     async with async_session() as session:  # Используем контекст с асинхронной сессией
-        ingredient_alias = aliased(Ingredient)  # Создаем алиас для таблицы ингредиентов
 
         lowercase_ingrs = [ingr.lower() for ingr in ingredient_names]
-        
-        print(f'AAAA {lowercase_ingrs}')
 
         # Первый запрос: находим рецепты, в которых есть хотя бы один из указанных ингредиентов
         recipe_ids_query = (
