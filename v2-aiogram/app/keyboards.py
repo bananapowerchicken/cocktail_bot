@@ -5,13 +5,13 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardBut
 
 # main keyboard
 main_kb = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='Gimme cocktails!')],
-    [KeyboardButton(text='Add ingredients')],
-    [KeyboardButton(text='Stop adding ingredients')],
+    # [KeyboardButton(text='Gimme cocktails!')],
+    [KeyboardButton(text='Ввести ингредиенты')],
+    [KeyboardButton(text='Готово!')],
     [KeyboardButton(text='Clean ingredients')],
-    [KeyboardButton(text='Recipes some ingrs')],
-    [KeyboardButton(text='Recipes only ingrs')],
-    [KeyboardButton(text='Help - mock')]
+    [KeyboardButton(text='Давай рецепты!')],
+    # [KeyboardButton(text='Recipes only ingrs')],
+    # [KeyboardButton(text='Help - mock')]
 ])
 
 

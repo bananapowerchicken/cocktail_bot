@@ -17,7 +17,7 @@ async def command_start_handler(message: Message):
     """
     This handler receives messages with `/start` command
     """
-    await message.answer("Привет! Я бот, который поможет тебе выбрать коктейль на основе твоих ингредиентов.\nЧтобы начать, нажми кнопку 'Ввести ингредиенты'. Можешь ввести первые несколько букв или даже одну, а я предложу тебе варианты известных мне ингредиентов. \nКогда закончишь, нажми кнопку 'Давай рецепты!'", reply_markup=kb.main_kb) # a handler for start command
+    await message.answer("Привет! Я бот, который поможет тебе выбрать коктейль на основе твоих ингредиентов.\nЧтобы начать, нажми кнопку 'Ввести ингредиенты'. Можешь ввести первые несколько букв или даже одну, а я предложу тебе варианты известных мне ингредиентов. \nКогда закончишь, нажми кнопку 'Готово!'", reply_markup=kb.main_kb) # a handler for start command
 
 
 # don't like that have to check the exact text on the btn!
@@ -42,7 +42,7 @@ async def command_give_instruction_handler(message: Message):
     search_ingrs = True
 
 
-@router.message(lambda message: message.text == 'Давай рецепты!')
+@router.message(lambda message: message.text == 'Готово!')
 async def command_give_instruction_handler(message: Message):
     """
     This handler identifies that adding ingredients is finished
@@ -52,9 +52,10 @@ async def command_give_instruction_handler(message: Message):
     search_ingrs = False
     global ingrs_list
     await message.answer(f'Ingredients list: {ingrs_list}')
+    await message.answer(f'Если все ингредиенты введены, жми "Давай рецепты!"')
 
 
-@router.message(lambda message: message.text == 'Recipes some ingrs')
+@router.message(lambda message: message.text == 'Давай рецепты!')
 async def command_give_instruction_handler(message: Message):
     """
     This handler gives recipes with user ingrs
