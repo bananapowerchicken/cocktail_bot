@@ -62,13 +62,19 @@ async def command_give_instruction_handler(message: Message):
     """
     global ingrs_list
 
-
-    print('AAAA')
     res = await find_recipes_by_ingredients(ingrs_list)
-    print(f'recipe {res}')
+    # print(f'recipe {res}')
+
+    # try pretty recipe output
+    # тут тренирую красивый вывод
+    # тут напишу, что понадобится, типа вот, что вам нужно, а вот алгоритм
+    for k in res.keys():
+        print(k)
+        print(res[k]['instruction'])
+        print(res[k]['ingredients'])
 
     await message.answer(f'Here are your ingrs: {ingrs_list}')
-    await message.answer(f'Here are your recipe: {res}')
+    await message.answer(f'Here are your recipe: {res.keys}')
 
 
 @router.message(lambda message: message.text == 'Recipes only ingrs')
