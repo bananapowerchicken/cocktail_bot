@@ -1,7 +1,7 @@
 # requests to DB
 
 from app.database.models import Ingredient, async_session, RecipeIngredient, Recipe
-from sqlalchemy import select, func, case
+from sqlalchemy import select, func, distinct, case
 from sqlalchemy.orm import aliased
 
 # get all ingredients from DB
@@ -72,53 +72,47 @@ async def find_recipes_by_ingredients(ingredient_names: list[str]) -> list[dict]
         
         return recipes
 
-# Асинхронная функция для поиска рецептов по списку ингредиентов только из этих ингр
-from sqlalchemy import func
 
 async def find_recipes_by_only_ingredients(ingredient_names: list[str]) -> list[dict]:
-    # Приводим список ингредиентов к нижнему регистру
-    lowercase_ingrs = [ingr.lower() for ingr in ingredient_names]
-    
-    recipe_ids_query = (
-        select(Recipe.id)
-        .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
-        .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)
-        .group_by(Recipe.id)
-        .having(
-            func.count(Ingredient.id) == func.count(
-                case(
-                    # Create a case expression to count only matching ingredients
-                    [(Ingredient.name.in_(lowercase_ingrs), 1)],  # when the ingredient is in the list
-                    else_=None  # if it doesn't match, return None
-                )
-            )
+    async with async_session() as session:  # Используем контекст с асинхронной сессией
+
+        lowercase_ingrs = [ingr.lower() for ingr in ingredient_names]
+
+        # Первый запрос: находим рецепты, у которых все ингредиенты находятся в списке входных ингредиентов
+        recipe_ids_query = (
+            select(Recipe.id)
+            .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
+            .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)
+            .group_by(Recipe.id)  # Группируем по рецепту
+            .having(
+                func.count(Ingredient.id) == func.count(
+                    func.case(
+                        [(Ingredient.name.in_(lowercase_ingrs), 1)]
+                    )
+                )  # Условие: все ингредиенты рецепта должны быть в `lowercase_ingrs`
             )
         )
 
-        # Выполняем запрос для получения ID рецептов
-        recipe_ids_result = await session.execute(recipe_ids_query) # вот тут уже проблема
+        # Выполняем первый запрос
+        recipe_ids_result = await session.execute(recipe_ids_query)
         recipe_ids = [row[0] for row in recipe_ids_result]
 
-        # Если нет рецептов, возвращаем пустой список
+        # Если нет рецептов с указанными ингредиентами, возвращаем пустой список
         if not recipe_ids:
-            return []
-        
-        print(f'recipe_ids {recipe_ids}')
+            return {}
 
         # Второй запрос: находим все ингредиенты для найденных рецептов
         query = (
-            select(Recipe.id, Recipe.name, Recipe.instruction, Ingredient.name, 
-                   RecipeIngredient.quantity, RecipeIngredient.unit)
+            select(Recipe.id, Recipe.name, Recipe.instruction, Ingredient.name, RecipeIngredient.quantity, RecipeIngredient.unit)
             .join(RecipeIngredient, Recipe.id == RecipeIngredient.recipe_id)
             .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)
-            .filter(Recipe.id.in_(recipe_ids))  # Фильтруем по найденным рецептам
+            .filter(Recipe.id.in_(recipe_ids))  # Выбираем рецепты, которые были найдены на предыдущем этапе
         )
 
         # Выполняем запрос
         result = await session.execute(query)
         rows = result.all()
 
-        # Формируем структуру ответа
         recipes = {}
         for recipe_id, recipe_name, instruction, ingredient_name, quantity, unit in rows:
             if recipe_name not in recipes:
@@ -132,7 +126,7 @@ async def find_recipes_by_only_ingredients(ingredient_names: list[str]) -> list[
                 'quantity': quantity,
                 'unit': unit
             })
-
+        
         return recipes
 
 
