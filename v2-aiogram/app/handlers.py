@@ -63,15 +63,16 @@ async def command_give_instruction_handler(message: Message):
     global ingrs_list
 
     res = await find_recipes_by_ingredients(ingrs_list)
-    # print(f'recipe {res}')
-
     # try pretty recipe output
     # тут тренирую красивый вывод
     # тут напишу, что понадобится, типа вот, что вам нужно, а вот алгоритм
     res_text = ''
+    cocktail_num = 0
+
     for k in res.keys():
+        cocktail_num += 1
         print(k) # name of cocktail
-        res_text += k
+        res_text += f'Коктейль №{cocktail_num}: "{k}"'
         res_text += '\n\n'
 
         print(res[k]['ingredients']) # list of ingredients
@@ -86,26 +87,9 @@ async def command_give_instruction_handler(message: Message):
         print(res[k]['instruction']) # instruction of cocktail
         res_text += '\n'
         res_text += res[k]['instruction']
+        res_text += '\n\n'
 
-    # await message.answer(f'Here are your ingrs: {ingrs_list}')
-    # await message.answer(f'Here are your recipe: {res.keys}')
     await message.answer(res_text)
-
-
-@router.message(lambda message: message.text == 'Recipes only ingrs')
-async def command_give_instruction_handler(message: Message):
-    """
-    This handler gives recipes only from user's ingrs
-    """
-    global ingrs_list
-
-
-    print('AAAA')
-    res = await find_recipes_by_only_ingredients(ingrs_list)
-    print(f'recipe {res}')
-
-    await message.answer(f'Here are your ingrs: {ingrs_list}')
-    await message.answer(f'Here are your recipe: {res}')
 
 
 @router.message(lambda message: message.text == 'Clean ingredients')
@@ -159,9 +143,9 @@ async def handle_user_input(message: Message):
         if filtered_ingredients:
             # Создание инлайн-клавиатуры с предложениями
             suggestions_kb = kb.create_ingredient_suggestions(filtered_ingredients)
-            await message.answer("Here are some suggestions:", reply_markup=suggestions_kb)
+            await message.answer("Выбирай ингредиенты:", reply_markup=suggestions_kb)
         else:
-            await message.answer("No matching ingredients found.")
+            await message.answer("Нет ингредиентов, начинающихся с этого текста :(")
 
 
 
