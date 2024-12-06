@@ -20,18 +20,6 @@ async def command_start_handler(message: Message):
     await message.answer("Привет! Я бот, который поможет тебе выбрать коктейль на основе твоих ингредиентов.\nЧтобы начать, нажми кнопку 'Ввести ингредиенты'. Можешь ввести первые несколько букв или даже одну, а я предложу тебе варианты известных мне ингредиентов. \nКогда закончишь, нажми кнопку 'Давай рецепты!'", reply_markup=kb.main_kb) # a handler for start command
 
 
-# don't like that have to check the exact text on the btn!
-@router.message(lambda message: message.text == 'Gimme cocktails!')
-async def command_give_instruction_handler(message: Message):
-    """
-    This handler sends an instruction after pressing Gimme cocktail btn
-    """
-    await message.answer('Please, type your ingredients')
-    # renew list
-    global ingrs_list
-    ingrs_list = []
-
-
 @router.message(lambda message: message.text == 'Ввести ингредиенты')
 async def command_give_instruction_handler(message: Message):
     """
