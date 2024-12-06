@@ -68,13 +68,28 @@ async def command_give_instruction_handler(message: Message):
     # try pretty recipe output
     # тут тренирую красивый вывод
     # тут напишу, что понадобится, типа вот, что вам нужно, а вот алгоритм
+    res_text = ''
     for k in res.keys():
-        print(k)
-        print(res[k]['instruction'])
-        print(res[k]['ingredients'])
+        print(k) # name of cocktail
+        res_text += k
+        res_text += '\n\n'
 
-    await message.answer(f'Here are your ingrs: {ingrs_list}')
-    await message.answer(f'Here are your recipe: {res.keys}')
+        print(res[k]['ingredients']) # list of ingredients
+        for ingr in res[k]['ingredients']:
+            ingr_str = ''
+            for v in ingr.values():
+                ingr_str += f'{v} '                
+            print(ingr_str)
+            res_text += ingr_str
+            res_text += '\n'
+
+        print(res[k]['instruction']) # instruction of cocktail
+        res_text += '\n'
+        res_text += res[k]['instruction']
+
+    # await message.answer(f'Here are your ingrs: {ingrs_list}')
+    # await message.answer(f'Here are your recipe: {res.keys}')
+    await message.answer(res_text)
 
 
 @router.message(lambda message: message.text == 'Recipes only ingrs')
