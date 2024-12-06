@@ -17,7 +17,7 @@ async def command_start_handler(message: Message):
     """
     This handler receives messages with `/start` command
     """
-    await message.answer("Привет! Я бот, который поможет тебе выбрать коктейль на основе твоих ингредиентов.\nЧтобы начать, нажми кнопку 'Ввести ингредиенты'. Можешь ввести первые несколько букв или даже одну, а я предложу тебе варианты известных мне ингредиентов. \nКогда закончишь, нажми кнопку 'Готово!'", reply_markup=kb.main_kb) # a handler for start command
+    await message.answer("Привет! Я бот, который поможет тебе выбрать коктейль на основе твоих ингредиентов.\nЧтобы начать, нажми кнопку 'Ввести ингредиенты'. Можешь ввести первые несколько букв или даже одну, а я предложу тебе варианты известных мне ингредиентов. \nКогда закончишь, нажми кнопку 'Давай рецепты!'", reply_markup=kb.main_kb) # a handler for start command
 
 
 # don't like that have to check the exact text on the btn!
@@ -37,23 +37,31 @@ async def command_give_instruction_handler(message: Message):
     """
     This handler identifies that adding ingredients is started
     """
-    await message.answer('Waiting for your ingredients')
+    await message.answer('Жду ингредиенты...')
     global search_ingrs
     search_ingrs = True
 
 
-@router.message(lambda message: message.text == 'Готово!')
+@router.message(lambda message: message.text == 'Мои ингредиенты')
 async def command_give_instruction_handler(message: Message):
     """
     This handler identifies that adding ingredients is finished
     """
-    await message.answer('Ingredients accepted')
+    # await message.answer('Ингредиенты приняты!')
     global search_ingrs
     search_ingrs = False
     global ingrs_list
-    await message.answer(f'Ingredients list: {ingrs_list}')
-    await message.answer(f'Если все ингредиенты введены, жми "Давай рецепты!"')
+    show_ingrs = ''
+    for ingr in ingrs_list:
+        show_ingrs += ' - '
+        show_ingrs += ingr
+        show_ingrs += '\n'
 
+    if len(ingrs_list):
+        await message.answer(f'Твой список ингредиентов:\n{show_ingrs}')
+        await message.answer(f'Если все ингредиенты введены правильно, жми "Давай рецепты!" Если нет - жми "Ввести ингредиенты" и добавляй дальше')
+    else:
+        await message.answer(f'Нет ингредиентов. Введи, плиз.')
 
 @router.message(lambda message: message.text == 'Давай рецепты!')
 async def command_give_instruction_handler(message: Message):
@@ -77,7 +85,7 @@ async def command_give_instruction_handler(message: Message):
 
         print(res[k]['ingredients']) # list of ingredients
         for ingr in res[k]['ingredients']:
-            ingr_str = ''
+            ingr_str = ' - '
             for v in ingr.values():
                 ingr_str += f'{v} '                
             print(ingr_str)
@@ -92,17 +100,17 @@ async def command_give_instruction_handler(message: Message):
     await message.answer(res_text)
 
 
-@router.message(lambda message: message.text == 'Clean ingredients')
+@router.message(lambda message: message.text == 'Очистить мои ингредиенты')
 async def command_give_instruction_handler(message: Message):
     """
     This handler makes ingredients' list empty
     """
-    await message.answer('Ingredients list id empty')
+    await message.answer('Список с ингредиентами очищен')
     global search_ingrs
     search_ingrs = False
     global ingrs_list
     ingrs_list = []
-    await message.answer(f'Ingredients list: {ingrs_list}')
+    # await message.answer(f'Ingredients list: {ingrs_list}')
 
 @router.callback_query()
 async def handle_callback_query(callback_query: CallbackQuery):
