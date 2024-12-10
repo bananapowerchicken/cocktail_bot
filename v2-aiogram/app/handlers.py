@@ -104,28 +104,6 @@ async def command_give_instruction_handler(message: Message):
     # await message.answer(f'Ingredients list: {ingrs_list}')
 
 
-# @router.message(lambda message: message.text == 'Искать по названию коктейля')
-# async def command_give_instruction_handler(message: Message):
-#     """
-#     This handler searches for cocktails by their names
-#     """
-#     user_input = message.text.strip()  # извлекаем текст из сообщения пользователя
-    
-#     # Ищем коктейли, чьи названия содержат введенную подстроку
-#     cocktails = await search_cocktail_by_name(user_input)
-    
-#     if cocktails:
-#         # Если коктейли найдены, отправляем их пользователю
-#         response = "Найдено коктейлей:\n\n"
-#         for cocktail in cocktails:
-#             response += f"🍹 {cocktail.name}\n"
-#             response += f"Инструкция: {cocktail.instruction}\n\n"
-#         await message.answer(response)
-#     else:
-#         # Если ничего не найдено
-#         await message.answer("Коктейли с таким названием не найдены.")
-
-
 # Обработчик кнопки "Искать по названию коктейля"
 @router.message(lambda message: message.text == 'Искать по названию коктейля')
 async def command_give_instruction_handler(message: Message):
@@ -133,7 +111,7 @@ async def command_give_instruction_handler(message: Message):
     Этот обработчик отправляет запрос пользователю ввести название коктейля
     """
     # Отправляем сообщение, что нужно ввести название коктейля
-    await message.answer("Пожалуйста, введите название коктейля для поиска:")
+    await message.answer("Пожалуйста, введите название коктейля для поиска с заглавной буквы:")
     
     # Отправляем сообщение с кнопкой "Завершить поиск"
     await message.answer("Если хотите завершить поиск, нажмите 'Завершить поиск'.")

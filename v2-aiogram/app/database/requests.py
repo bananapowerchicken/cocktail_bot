@@ -134,7 +134,7 @@ async def search_cocktail_by_name(partial_name: str):
     # создаем сессию для выполнения запросов
     async with async_session() as session:
         # создаем запрос для поиска коктейлей по части названия (не чувствителен к регистру)
-        query = select(Recipe).filter(Recipe.name.ilike(f"%{partial_name}%"))
+        query = select(Recipe).filter(Recipe.name.ilike(f"%{partial_name.lower()}%"))
         result = await session.execute(query)
         return result.scalars().all()
 
