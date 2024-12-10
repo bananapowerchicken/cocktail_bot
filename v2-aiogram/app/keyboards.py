@@ -4,13 +4,21 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardBut
 
 
 # main keyboard
-main_kb = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='Ввести ингредиенты')],
-    [KeyboardButton(text='Мои ингредиенты')],
-    [KeyboardButton(text='Очистить мои ингредиенты')],
-    [KeyboardButton(text='Давай рецепты!')],
-    [KeyboardButton(text='Искать по названию коктейля')],
-    [KeyboardButton(text='Завершить поиск')],
+# main_kb = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2,
+#     keyboard=[
+#     [KeyboardButton(text='Ввести ингредиенты')],
+#     [KeyboardButton(text='Мои ингредиенты')],
+#     [KeyboardButton(text='Очистить мои ингредиенты')],
+#     [KeyboardButton(text='Давай рецепты!')],
+#     [KeyboardButton(text='Искать по названию коктейля')],
+#     [KeyboardButton(text='Завершить поиск')],
+# ])
+
+# 2 buttons in row
+main_kb = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2, keyboard=[
+    [KeyboardButton(text='Ввести ингредиенты'), KeyboardButton(text='Мои ингредиенты')],
+    [KeyboardButton(text='Очистить мои ингредиенты'), KeyboardButton(text='Давай рецепты!')],
+    [KeyboardButton(text='Искать по названию коктейля'), KeyboardButton(text='Завершить поиск')],
 ])
 
 
