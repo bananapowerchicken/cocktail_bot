@@ -9,6 +9,8 @@ main_kb = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text='Мои ингредиенты')],
     [KeyboardButton(text='Очистить мои ингредиенты')],
     [KeyboardButton(text='Давай рецепты!')],
+    [KeyboardButton(text='Искать по названию коктейля')],
+    [KeyboardButton(text='Завершить поиск')],
 ])
 
 
