@@ -1,3 +1,6 @@
+# http://127.0.0.1:8000 - address
+# uvicorn main:app --reload - launch
+
 from fastapi import FastAPI
 
 
