@@ -5,9 +5,19 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.database.models import Recipe, async_session
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+
+# helps to display the recipes - smth with cors
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Получаем сессию для работы с БД
