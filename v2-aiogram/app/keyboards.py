@@ -18,7 +18,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardBut
 main_kb = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2, keyboard=[
     [KeyboardButton(text='Ввести ингредиенты'), KeyboardButton(text='Мои ингредиенты')],
     [KeyboardButton(text='Очистить мои ингредиенты'), KeyboardButton(text='Давай рецепты!')],
-    [KeyboardButton(text='Искать по названию коктейля'), KeyboardButton(text='Завершить поиск')],
+    # [KeyboardButton(text='Искать по названию коктейля'), KeyboardButton(text='Завершить поиск')],
 ])
 
 
