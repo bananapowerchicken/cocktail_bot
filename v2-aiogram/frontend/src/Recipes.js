@@ -1,32 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const Recipes = () => {
+const RecipeList = () => {
     const [recipes, setRecipes] = useState([]);
 
     useEffect(() => {
-        axios.get("http://127.0.0.1:8000/recipes")
-            .then(response => {
+        axios.get("http://localhost:8000/recipes")
+            .then((response) => {
                 setRecipes(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("Ошибка при загрузке рецептов:", error);
             });
     }, []);
 
     return (
-        <div style={{ textAlign: "center", padding: "20px" }}>
-            <h1>📜 Рецепты коктейлей</h1>
-            <ul style={{ listStyleType: "none", padding: 0 }}>
-                {recipes.map(recipe => (
-                    <li key={recipe.id} style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
-                        <h3>{recipe.name}</h3>
-                        <p>{recipe.instruction}</p>
-                    </li>
-                ))}
-            </ul>
+        <div>
+            <h2>📜 Список коктейлей</h2>
+            {recipes.map((recipe) => (
+                <div key={recipe.id} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
+                    <h3>{recipe.name}</h3>
+                    <p><strong>Инструкция:</strong> {recipe.instruction}</p>
+                    <h4>🧪 Ингредиенты:</h4>
+                    <ul>
+                        {recipe.ingredients.map((ing, index) => (
+                            <li key={index}>{ing.name} - {ing.quantity} {ing.unit}</li>
+                        ))}
+                    </ul>
+                </div>
+            ))}
         </div>
     );
 };
 
-export default Recipes;
+export default RecipeList;
