@@ -1,37 +1,17 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./Home";
+import Recipes from "./Recipes";
 
-function App() {
-    const [recipes, setRecipes] = useState([]);
-
-    useEffect(() => {
-        axios.get("http://127.0.0.1:8000/recipes") // Запрос к API FastAPI
-            .then(response => {
-                setRecipes(response.data); // Обновляем состояние
-            })
-            .catch(error => {
-                console.error("Ошибка при загрузке рецептов:", error);
-            });
-    }, []);
-
+const App = () => {
     return (
-        <div className="container mt-5">
-            <h1 className="text-center">📜 Рецепты коктейлей</h1>
-            <div className="row">
-                {recipes.map((recipe) => (
-                    <div key={recipe.id} className="col-md-4">
-                        <div className="card mb-4">
-                            <div className="card-body">
-                                <h5 className="card-title">{recipe.name}</h5>
-                                <p className="card-text">{recipe.instruction}</p>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/recipes" element={<Recipes />} />
+            </Routes>
+        </Router>
     );
-}
+};
 
 export default App;
